@@ -1,0 +1,75 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
+import CtaBanner from '../components/CtaBanner.astro';
+import { alternatesForEntry, getPosts, readingTime, type Post } from '../lib/content';
+import { blogPosting } from '../lib/schema';
+import { path } from '../i18n/routes';
+import { formatDate, useTranslations } from '../i18n/ui';
+
+interface Props {
+  entry: Post;
+}
+
+const { entry } = Astro.props;
+const { locale, data } = entry;
+const t = useTranslations(locale);
+const { Content } = await render(entry);
+const all = await getPosts();
+const breadcrumbs = [
+  { name: t('nav.blog'), path: path('blog', locale) },
+  { name: data.title, path: entry.href },
+];
+---
+
+<BaseLayout
+  title={data.title}
+  description={data.description}
+  locale={locale}
+  alternates={alternatesForEntry(entry, all)}
+  breadcrumbs={breadcrumbs}
+  type="article"
+  publishedTime={data.pubDate}
+  modifiedTime={data.updatedDate ?? data.pubDate}
+  schema={[
+    blogPosting({
+      title: data.title,
+      description: data.description,
+      path: entry.href,
+      pubDate: data.pubDate,
+      updatedDate: data.updatedDate,
+      locale,
+      tags: data.tags,
+    }),
+  ]}
+>
+  <article>
+    <header class="relative isolate overflow-hidden border-b border-line">
+      <div class="bg-grid absolute inset-0 -z-10" aria-hidden="true"></div>
+      <div class="container-x max-w-4xl pt-10 pb-14">
+        <Breadcrumbs locale={locale} items={breadcrumbs} />
+        <h1 class="mt-10 text-3xl font-semibold tracking-tight text-balance text-fg sm:text-5xl">{data.title}</h1>
+        <p class="mt-5 text-lg leading-relaxed text-muted">{data.description}</p>
+        <p class="mt-6 font-mono text-xs text-subtle">
+          {t('blog.published')} <time datetime={data.pubDate.toISOString()}>{formatDate(data.pubDate, locale)}</time>
+          {
+            data.updatedDate && (
+              <>
+                {' · '}
+                {t('blog.updated')} <time datetime={data.updatedDate.toISOString()}>{formatDate(data.updatedDate, locale)}</time>
+              </>
+            )
+          }
+          {' · '}{readingTime(entry.body)} {t('blog.minutes')}
+        </p>
+      </div>
+    </header>
+    <div class="container-x max-w-4xl py-14">
+      <div class="prose-site">
+        <Content />
+      </div>
+    </div>
+  </article>
+  <CtaBanner locale={locale} />
+</BaseLayout>

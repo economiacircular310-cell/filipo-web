@@ -1,0 +1,100 @@
+---
+import { getCollection } from 'astro:content';
+import Logo from './ui/Logo.astro';
+import { site } from '../config/site';
+import { path, servicePath, splitEntryId, type Locale } from '../i18n/routes';
+import { useTranslations } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const services = (await getCollection('services'))
+  .map((entry) => ({ ...splitEntryId(entry.id), data: entry.data }))
+  .filter((s) => s.locale === locale)
+  .sort((a, b) => a.data.order - b.data.order);
+
+const columns = [
+  {
+    title: t('footer.services'),
+    links: services.map((s) => ({ href: servicePath(s.slug, locale), label: s.data.title })),
+  },
+  {
+    title: t('footer.company'),
+    links: [
+      { href: path('about', locale), label: t('nav.about') },
+      { href: path('process', locale), label: t('nav.process') },
+      { href: path('blog', locale), label: t('nav.blog') },
+      { href: path('faq', locale), label: t('nav.faq') },
+      { href: path('contact', locale), label: t('nav.contact') },
+    ],
+  },
+  {
+    title: t('footer.legal'),
+    links: [
+      { href: path('legal', locale), label: t('legal.notice') },
+      { href: path('privacy', locale), label: t('legal.privacy') },
+      { href: path('cookies', locale), label: t('legal.cookies') },
+    ],
+  },
+];
+const year = new Date().getFullYear();
+---
+
+<footer class="relative mt-24 border-t border-line bg-ink-950">
+  <div class="container-x grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-5">
+    <div class="lg:col-span-2">
+      <a href={path('home', locale)} aria-label={site.name} class="inline-block rounded-md"><Logo /></a>
+      <p class="mt-5 max-w-sm text-sm leading-relaxed text-muted">{t('footer.blurb')}</p>
+      <a
+        href={`mailto:${site.email}`}
+        class="mt-5 inline-flex items-center gap-2 font-mono text-sm text-fg transition hover:text-brand-400"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+          <path d="m3 7 9 6 9-6"></path>
+        </svg>
+        {site.email}
+      </a>
+      {
+        site.sameAs.length > 0 && (
+          <ul class="mt-5 flex flex-wrap gap-3 text-sm">
+            {site.sameAs.map((url) => (
+              <li>
+                <a href={url} rel="me noopener" target="_blank" class="text-muted hover:text-fg">
+                  {new URL(url).hostname.replace('www.', '')}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </div>
+
+    {
+      columns.map((col) => (
+        <div>
+          <h2 class="eyebrow text-subtle">{col.title}</h2>
+          <ul class="mt-4 space-y-3">
+            {col.links.map((link) => (
+              <li>
+                <a href={link.href} class="text-sm text-muted transition hover:text-fg">
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+  </div>
+  <div class="border-t border-line">
+    <div class="container-x flex flex-col gap-2 py-6 text-xs text-subtle sm:flex-row sm:items-center sm:justify-between">
+      <p>© {year} {site.name}. {t('footer.rights')}</p>
+      <p class="font-mono">{t('meta.tagline')}</p>
+    </div>
+  </div>
+</footer>

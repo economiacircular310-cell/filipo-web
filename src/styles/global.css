@@ -1,0 +1,174 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-ink-950: #07080c;
+  --color-ink-900: #0a0b10;
+  --color-ink-850: #0e1016;
+  --color-ink-800: #12141c;
+  --color-ink-700: #1a1d28;
+  --color-line: #1f2330;
+  --color-line-strong: #2c3142;
+  --color-fg: #e6e8ef;
+  --color-muted: #9aa0b4;
+  --color-subtle: #7c8299;
+  --color-brand-400: #818cf8;
+  --color-brand-500: #6366f1;
+  --color-brand-600: #4f46e5;
+  --color-violet-500: #8b5cf6;
+  --color-cyan-400: #22d3ee;
+  --color-success: #34d399;
+  --color-danger: #f87171;
+
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+
+  --radius-card: 1rem;
+  --shadow-glow: 0 0 0 1px rgb(99 102 241 / 0.25), 0 20px 60px -20px rgb(99 102 241 / 0.45);
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 5rem;
+  }
+
+  body {
+    @apply bg-ink-900 font-sans text-fg antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: rgb(99 102 241 / 0.4);
+    color: #fff;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-cyan-400);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+}
+
+@layer components {
+  .container-x {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .eyebrow {
+    @apply font-mono text-xs font-medium tracking-wider text-brand-400 uppercase;
+  }
+
+  .text-gradient {
+    background: linear-gradient(100deg, #fff 10%, var(--color-brand-400) 55%, var(--color-cyan-400) 95%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .btn,
+  .btn-primary,
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition duration-200;
+  }
+
+  .btn-primary {
+    @apply text-white;
+    background: linear-gradient(135deg, var(--color-brand-500), var(--color-violet-500));
+    box-shadow: 0 8px 30px -8px rgb(99 102 241 / 0.6), inset 0 1px 0 rgb(255 255 255 / 0.15);
+  }
+
+  .btn-primary:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 10px 40px -8px rgb(139 92 246 / 0.7), inset 0 1px 0 rgb(255 255 255 / 0.2);
+  }
+
+  .btn-ghost {
+    @apply border border-line-strong bg-white/[0.03] text-fg hover:border-brand-400/60 hover:bg-white/[0.06];
+  }
+
+  .card {
+    @apply relative rounded-[var(--radius-card)] border border-line bg-ink-800/60 transition duration-300;
+  }
+
+  .card-hover:hover {
+    @apply border-brand-500/40;
+    box-shadow: var(--shadow-glow);
+  }
+
+  /* Fine technical grid used behind hero sections */
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, rgb(255 255 255 / 0.045) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(255 255 255 / 0.045) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
+  }
+
+  .glow {
+    pointer-events: none;
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(80px);
+    opacity: 0.55;
+  }
+
+  /* Long-form text (blog posts, service bodies, legal pages) */
+  .prose-site {
+    @apply max-w-none text-[1.0625rem] leading-relaxed text-muted;
+  }
+  .prose-site > * + * {
+    @apply mt-5;
+  }
+  .prose-site > :first-child {
+    @apply mt-0;
+  }
+  .prose-site h2 {
+    @apply mt-12 text-2xl font-semibold tracking-tight text-fg sm:text-3xl;
+  }
+  .prose-site h3 {
+    @apply mt-8 text-xl font-semibold text-fg;
+  }
+  .prose-site strong {
+    @apply font-semibold text-fg;
+  }
+  .prose-site a {
+    @apply font-medium text-brand-400 underline decoration-brand-400/40 underline-offset-4 hover:decoration-brand-400;
+  }
+  .prose-site ul {
+    @apply list-disc space-y-2 pl-6 marker:text-brand-400;
+  }
+  .prose-site ol {
+    @apply list-decimal space-y-2 pl-6 marker:font-mono marker:text-brand-400;
+  }
+  .prose-site code {
+    @apply rounded bg-ink-700 px-1.5 py-0.5 font-mono text-[0.875em] text-cyan-400;
+  }
+  .prose-site pre {
+    @apply overflow-x-auto rounded-xl border border-line bg-ink-950 p-4 text-sm;
+  }
+  .prose-site pre code {
+    @apply bg-transparent p-0 text-fg;
+  }
+  .prose-site blockquote {
+    @apply border-l-2 border-brand-500 pl-4 text-fg italic;
+  }
+  .prose-site table {
+    @apply block w-full overflow-x-auto text-left text-sm sm:table;
+  }
+  .prose-site th {
+    @apply border-b border-line-strong px-3 py-2 font-semibold whitespace-nowrap text-fg;
+  }
+  .prose-site td {
+    @apply border-b border-line px-3 py-2 align-top;
+  }
+  .prose-site hr {
+    @apply my-10 border-line;
+  }
+}

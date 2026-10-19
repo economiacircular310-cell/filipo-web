@@ -1,0 +1,111 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/ui/PageHeader.astro';
+import Process from '../components/home/Process.astro';
+import SectionHeading from '../components/ui/SectionHeading.astro';
+import Icon, { type IconName } from '../components/ui/Icon.astro';
+import CtaBanner from '../components/CtaBanner.astro';
+import { processSteps } from '../data/process';
+import { abs } from '../lib/schema';
+import { alternatesFor, path, type Locale } from '../i18n/routes';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy: Record<
+  Locale,
+  {
+    title: string;
+    description: string;
+    eyebrow: string;
+    h1: string;
+    lead: string;
+    crumb: string;
+    includedEyebrow: string;
+    includedTitle: string;
+    included: { icon: IconName; title: string; text: string }[];
+  }
+> = {
+  es: {
+    title: 'Cómo trabajamos: proceso de desarrollo y SEO',
+    description:
+      'Descubre el proceso de Filipo Studio: descubrimiento, propuesta cerrada, desarrollo en ciclos cortos y lanzamiento con mejora continua. Sin sorpresas.',
+    eyebrow: '// Proceso',
+    h1: 'Cómo trabajamos',
+    lead: 'Un proceso en cuatro fases, con entregables concretos y visibilidad total, para que sepas en cada momento qué estamos haciendo y por qué.',
+    crumb: 'Cómo trabajamos',
+    includedEyebrow: '// En cada proyecto',
+    includedTitle: 'Incluido siempre, sin coste adicional',
+    included: [
+      { icon: 'doc', title: 'Documentación', text: 'Documentación técnica y de uso para que tu equipo sea autónomo.' },
+      { icon: 'search', title: 'SEO técnico de base', text: 'Metadatos, datos estructurados, sitemap y buenas prácticas de indexación.' },
+      { icon: 'gauge', title: 'Rendimiento', text: 'Objetivos de Core Web Vitals definidos y verificados antes del lanzamiento.' },
+      { icon: 'shield', title: 'Seguridad', text: 'Dependencias actualizadas, HTTPS, cabeceras seguras y copias de seguridad.' },
+    ],
+  },
+  en: {
+    title: 'How We Work: Our Development & SEO Process',
+    description:
+      'Discover Filipo Studio’s process: discovery, fixed-price proposal, development in short cycles and launch with continuous improvement. No surprises.',
+    eyebrow: '// Process',
+    h1: 'How we work',
+    lead: 'A four-phase process with concrete deliverables and full visibility, so you always know what we are doing and why.',
+    crumb: 'How we work',
+    includedEyebrow: '// In every project',
+    includedTitle: 'Always included, at no extra cost',
+    included: [
+      { icon: 'doc', title: 'Documentation', text: 'Technical and user documentation so your team stays autonomous.' },
+      { icon: 'search', title: 'Baseline technical SEO', text: 'Metadata, structured data, sitemap and indexing best practices.' },
+      { icon: 'gauge', title: 'Performance', text: 'Core Web Vitals targets defined and verified before launch.' },
+      { icon: 'shield', title: 'Security', text: 'Up-to-date dependencies, HTTPS, secure headers and backups.' },
+    ],
+  },
+};
+const c = copy[locale];
+const breadcrumbs = [{ name: c.crumb, path: path('process', locale) }];
+const howTo = {
+  '@type': 'HowTo',
+  name: c.h1,
+  description: c.lead,
+  url: abs(path('process', locale)),
+  step: processSteps[locale].map((s, i) => ({
+    '@type': 'HowToStep',
+    position: i + 1,
+    name: s.title,
+    text: s.detail,
+  })),
+};
+---
+
+<BaseLayout
+  title={c.title}
+  description={c.description}
+  locale={locale}
+  alternates={alternatesFor('process')}
+  breadcrumbs={breadcrumbs}
+  schema={[howTo]}
+>
+  <PageHeader locale={locale} eyebrow={c.eyebrow} title={c.h1} lead={c.lead} breadcrumbs={breadcrumbs} />
+  <Process locale={locale} detailed showHeading={false} />
+
+  <section class="border-y border-line bg-ink-850/50" aria-labelledby="included">
+    <div class="container-x py-20">
+      <SectionHeading id="included" eyebrow={c.includedEyebrow} title={c.includedTitle} />
+      <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          c.included.map((item) => (
+            <div class="card p-6">
+              <Icon name={item.icon} size={22} class="text-brand-400" />
+              <h3 class="mt-4 font-semibold text-fg">{item.title}</h3>
+              <p class="mt-2 text-sm leading-relaxed text-muted">{item.text}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <CtaBanner locale={locale} />
+</BaseLayout>

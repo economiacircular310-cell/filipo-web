@@ -1,0 +1,60 @@
+---
+import { site, ogImage } from '../../config/site';
+import { defaultLocale, ogLocale, otherLocale, type Alternates, type Locale } from '../../i18n/routes';
+
+interface Props {
+  title: string;
+  description: string;
+  locale: Locale;
+  alternates: Alternates;
+  image?: string;
+  type?: 'website' | 'article';
+  noindex?: boolean;
+  publishedTime?: Date;
+  modifiedTime?: Date;
+}
+
+const { title, description, locale, alternates, image = ogImage, type = 'website', noindex = false, publishedTime, modifiedTime } =
+  Astro.props;
+
+const canonical = new URL(Astro.url.pathname, site.url).toString();
+// Append the brand only when it fits in the ~65 characters Google shows.
+const branded = `${title} | ${site.name}`;
+const fullTitle = title.includes(site.name) || branded.length > 65 ? title : branded;
+const imageUrl = new URL(image, site.url).toString();
+const abs = (p: string) => new URL(p, site.url).toString();
+const altLocale = otherLocale(locale);
+const xDefault = alternates[defaultLocale];
+---
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+<meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1'} />
+
+{
+  !noindex &&
+    Object.entries(alternates).map(([lang, href]) => (
+      <link rel="alternate" hreflang={lang} href={abs(href as string)} />
+    ))
+}
+{!noindex && xDefault && alternates[altLocale] && <link rel="alternate" hreflang="x-default" href={abs(xDefault)} />}
+
+<meta property="og:type" content={type} />
+<meta property="og:site_name" content={site.name} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={imageUrl} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={site.name} />
+<meta property="og:locale" content={ogLocale[locale]} />
+{alternates[altLocale] && <meta property="og:locale:alternate" content={ogLocale[altLocale]} />}
+{publishedTime && <meta property="article:published_time" content={publishedTime.toISOString()} />}
+{modifiedTime && <meta property="article:modified_time" content={modifiedTime.toISOString()} />}
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={imageUrl} />

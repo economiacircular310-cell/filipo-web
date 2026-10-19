@@ -1,0 +1,83 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/ui/PageHeader.astro';
+import Icon from '../components/ui/Icon.astro';
+import CtaBanner from '../components/CtaBanner.astro';
+import { getPosts, readingTime } from '../lib/content';
+import { abs } from '../lib/schema';
+import { alternatesFor, path, type Locale } from '../i18n/routes';
+import { formatDate, useTranslations } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const posts = await getPosts(locale);
+const c = {
+  es: {
+    title: 'Blog: desarrollo de software, SEO y rendimiento web',
+    description:
+      'Artículos prácticos sobre desarrollo de software a medida, posicionamiento SEO, buscadores de IA y optimización del rendimiento web.',
+    eyebrow: '// Blog',
+    h1: 'Blog',
+    lead: 'Guías prácticas sobre desarrollo de software, SEO, buscadores de IA y rendimiento web.',
+  },
+  en: {
+    title: 'Blog: Software Development, SEO & Web Performance',
+    description: 'Practical articles on custom software development, SEO, AI search engines and web performance optimization.',
+    eyebrow: '// Blog',
+    h1: 'Blog',
+    lead: 'Practical guides on software development, SEO, AI search and web performance.',
+  },
+}[locale];
+const breadcrumbs = [{ name: t('nav.blog'), path: path('blog', locale) }];
+const blogNode = {
+  '@type': 'Blog',
+  '@id': `${abs(path('blog', locale))}#blog`,
+  name: `${c.h1} — Filipo Studio`,
+  url: abs(path('blog', locale)),
+  blogPost: posts.map((p) => ({ '@id': `${abs(p.href)}#article` })),
+};
+---
+
+<BaseLayout
+  title={c.title}
+  description={c.description}
+  locale={locale}
+  alternates={alternatesFor('blog')}
+  breadcrumbs={breadcrumbs}
+  pageType="CollectionPage"
+  schema={[blogNode]}
+>
+  <PageHeader locale={locale} eyebrow={c.eyebrow} title={c.h1} lead={c.lead} breadcrumbs={breadcrumbs} />
+
+  <div class="container-x py-16">
+    <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+      {
+        posts.map((post) => (
+          <article class="card card-hover group relative flex flex-col p-7">
+            <p class="font-mono text-xs text-subtle">
+              <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate, locale)}</time>
+              {' · '}
+              {readingTime(post.body)} {t('blog.minutes')}
+            </p>
+            <h2 class="mt-4 text-xl font-semibold tracking-tight text-fg">
+              <a href={post.href} class="after:absolute after:inset-0">
+                {post.data.title}
+              </a>
+            </h2>
+            <p class="mt-3 flex-1 leading-relaxed text-muted">{post.data.description}</p>
+            <span class="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-brand-400">
+              {t('blog.readMore')}
+              <Icon name="arrow" size={16} class="transition group-hover:translate-x-1" />
+            </span>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+
+  <CtaBanner locale={locale} />
+</BaseLayout>

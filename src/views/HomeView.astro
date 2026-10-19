@@ -1,0 +1,63 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/home/Hero.astro';
+import ServicesBento from '../components/home/ServicesBento.astro';
+import WhyUs from '../components/home/WhyUs.astro';
+import Process from '../components/home/Process.astro';
+import TechStack from '../components/home/TechStack.astro';
+import Testimonials from '../components/home/Testimonials.astro';
+import CtaBanner from '../components/CtaBanner.astro';
+import SectionHeading from '../components/ui/SectionHeading.astro';
+import FaqList from '../components/ui/FaqList.astro';
+import Icon from '../components/ui/Icon.astro';
+import { faq } from '../data/faq';
+import { alternatesFor, path, type Locale } from '../i18n/routes';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const meta = {
+  es: {
+    title: 'Filipo Studio | Software a medida, SEO y optimización web',
+    description:
+      'Estudio de tecnología: desarrollamos software a medida, posicionamos tu web en Google y en buscadores de IA y optimizamos su rendimiento. Pide tu propuesta.',
+    faqEyebrow: '',
+    faqTitle: 'Respuestas rápidas',
+    faqAll: 'Ver todas las preguntas',
+  },
+  en: {
+    title: 'Filipo Studio | Custom Software, SEO & Web Performance',
+    description:
+      'Technology studio: we build custom software, rank your website on Google and AI search engines, and optimize its performance. Request a proposal.',
+    faqEyebrow: '// 05 — FAQ',
+    faqTitle: 'Quick answers',
+    faqAll: 'See all questions',
+  },
+}[locale];
+
+const faqTeaser = faq[locale].flatMap((g) => g.items).slice(0, 4);
+---
+
+<BaseLayout title={meta.title} description={meta.description} locale={locale} alternates={alternatesFor('home')}>
+  <Hero locale={locale} />
+  <ServicesBento locale={locale} />
+  <WhyUs locale={locale} />
+  <Process locale={locale} />
+  <TechStack locale={locale} />
+  <Testimonials locale={locale} />
+
+  <section class="container-x grid gap-12 py-20 sm:py-28 lg:grid-cols-[1fr_1.4fr]" aria-labelledby="faq-title">
+    <div>
+      <SectionHeading id="faq-title" eyebrow={meta.faqEyebrow} title={meta.faqTitle} />
+      <a href={path('faq', locale)} class="mt-8 inline-flex items-center gap-1.5 text-sm font-medium text-brand-400 hover:text-fg">
+        {meta.faqAll}
+        <Icon name="arrow" size={16} />
+      </a>
+    </div>
+    <FaqList items={faqTeaser} />
+  </section>
+
+  <CtaBanner locale={locale} />
+</BaseLayout>

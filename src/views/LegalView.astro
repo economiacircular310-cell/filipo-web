@@ -1,0 +1,263 @@
+---
+/**
+ * Legal pages (legal notice, privacy, cookies). This is a starting template
+ * based on Spanish LSSI-CE and the GDPR — have it reviewed by a legal
+ * professional and complete the details in src/config/site.ts.
+ */
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageHeader from "../components/ui/PageHeader.astro";
+import { site } from "../config/site";
+import { alternatesFor, path, type Locale } from "../i18n/routes";
+import { useTranslations } from "../i18n/ui";
+
+interface Props {
+  locale: Locale;
+  doc: "legal" | "privacy" | "cookies";
+}
+
+const { locale, doc } = Astro.props;
+const t = useTranslations(locale);
+const { legal, name, email, url } = site;
+const updated = {
+  es: "Última actualización: octubre de 2026",
+  en: "Last updated: October 2026",
+}[locale];
+
+type Section = { h: string; p: string[] };
+const docs: Record<
+  Locale,
+  Record<
+    Props["doc"],
+    { title: string; description: string; sections: Section[] }
+  >
+> = {
+  es: {
+    legal: {
+      title: t("legal.notice"),
+      description: `Aviso legal de ${name}: datos identificativos del titular, condiciones de uso y propiedad intelectual del sitio web.`,
+      sections: [
+        {
+          h: "Datos identificativos",
+          p: [
+            `En cumplimiento de la Ley 34/2002, de Servicios de la Sociedad de la Información y de Comercio Electrónico (LSSI-CE), se informa de que el titular de ${url} es ${legal.ownerName}, con NIF ${legal.taxId} y domicilio en ${legal.address}${legal.registry ? `, inscrita en ${legal.registry}` : ""}. Correo electrónico de contacto: ${email}.`,
+          ],
+        },
+        {
+          h: "Condiciones de uso",
+          p: [
+            "El acceso a este sitio web es gratuito y atribuye la condición de usuario, que acepta estas condiciones. El usuario se compromete a hacer un uso adecuado de los contenidos y a no emplearlos para actividades ilícitas o contrarias a la buena fe.",
+          ],
+        },
+        {
+          h: "Propiedad intelectual e industrial",
+          p: [
+            `Los contenidos, el diseño, los logotipos y el código de este sitio web son propiedad de ${name} o se utilizan con licencia. Queda prohibida su reproducción, distribución o transformación sin autorización expresa.`,
+          ],
+        },
+        {
+          h: "Responsabilidad",
+          p: [
+            `${name} no se hace responsable de los daños derivados del uso de la información de este sitio ni de los contenidos de sitios externos enlazados, sobre los que no tiene control.`,
+          ],
+        },
+        {
+          h: "Legislación aplicable",
+          p: [
+            "Estas condiciones se rigen por la legislación española. Para cualquier controversia, las partes se someten a los juzgados y tribunales que correspondan conforme a la normativa vigente.",
+          ],
+        },
+      ],
+    },
+    privacy: {
+      title: t("legal.privacy"),
+      description: `Política de privacidad de ${name}: qué datos tratamos, con qué finalidad, base legal, conservación y cómo ejercer tus derechos.`,
+      sections: [
+        {
+          h: "Responsable del tratamiento",
+          p: [
+            `${legal.ownerName} (${name}), NIF ${legal.taxId}, ${legal.address}. Contacto: ${email}.`,
+          ],
+        },
+        {
+          h: "Qué datos tratamos y para qué",
+          p: [
+            "Tratamos los datos que nos facilitas a través del formulario de contacto o por correo electrónico (nombre, email, empresa y el contenido de tu mensaje) con la única finalidad de responder a tu solicitud y, en su caso, preparar y gestionar una propuesta comercial.",
+          ],
+        },
+        {
+          h: "Base legal",
+          p: [
+            "La base legal es tu consentimiento, que otorgas al enviar el formulario, y la aplicación de medidas precontractuales a petición tuya (art. 6.1.a y 6.1.b del RGPD).",
+          ],
+        },
+        {
+          h: "Conservación",
+          p: [
+            "Conservamos los datos mientras sea necesario para atender tu solicitud y, posteriormente, durante los plazos legalmente exigibles. Si no llegamos a colaborar, los eliminamos en un plazo máximo de 12 meses.",
+          ],
+        },
+        {
+          h: "Destinatarios",
+          p: [
+            "No cedemos tus datos a terceros salvo obligación legal. El formulario de contacto se envía a través del proveedor Web3Forms, que actúa como encargado del tratamiento únicamente para entregarnos el mensaje por correo electrónico.",
+          ],
+        },
+        {
+          h: "Tus derechos",
+          p: [
+            `Puedes ejercer tus derechos de acceso, rectificación, supresión, oposición, limitación y portabilidad escribiendo a ${email}. También puedes presentar una reclamación ante la Agencia Española de Protección de Datos (www.aepd.es).`,
+          ],
+        },
+      ],
+    },
+    cookies: {
+      title: t("legal.cookies"),
+      description: `Política de cookies de ${name}. Este sitio web no utiliza cookies de seguimiento, analítica ni publicidad.`,
+      sections: [
+        {
+          h: "¿Usamos cookies?",
+          p: [
+            "No. Este sitio web no instala cookies propias ni de terceros con fines de análisis, publicidad o seguimiento, y no utiliza herramientas que perfilen tu navegación. Las fuentes tipográficas se sirven desde nuestro propio servidor.",
+          ],
+        },
+        {
+          h: "Cambios en esta política",
+          p: [
+            "Si en el futuro incorporamos herramientas que utilicen cookies no técnicas (por ejemplo, analítica), actualizaremos esta política y te pediremos tu consentimiento previo mediante un aviso.",
+          ],
+        },
+      ],
+    },
+  },
+  en: {
+    legal: {
+      title: t("legal.notice"),
+      description: `${name} legal notice: owner details, terms of use and intellectual property of this website.`,
+      sections: [
+        {
+          h: "Company details",
+          p: [
+            `In accordance with Spanish Law 34/2002 on Information Society Services (LSSI-CE), the owner of ${url} is ${legal.ownerName}, tax ID ${legal.taxId}, registered address ${legal.address}${legal.registry ? `, registered in ${legal.registry}` : ""}. Contact email: ${email}.`,
+          ],
+        },
+        {
+          h: "Terms of use",
+          p: [
+            "Access to this website is free and makes you a user, who accepts these terms. Users agree to make appropriate use of the content and not to use it for unlawful purposes or in bad faith.",
+          ],
+        },
+        {
+          h: "Intellectual property",
+          p: [
+            `The content, design, logos and code of this website are owned by ${name} or used under licence. Reproduction, distribution or modification without express permission is prohibited.`,
+          ],
+        },
+        {
+          h: "Liability",
+          p: [
+            `${name} is not liable for damages arising from the use of information on this site, nor for the content of linked external websites over which it has no control.`,
+          ],
+        },
+        {
+          h: "Governing law",
+          p: [
+            "These terms are governed by Spanish law. Any dispute shall be submitted to the competent courts under applicable legislation.",
+          ],
+        },
+      ],
+    },
+    privacy: {
+      title: t("legal.privacy"),
+      description: `${name} privacy policy: what data we process, why, the legal basis, retention and how to exercise your rights.`,
+      sections: [
+        {
+          h: "Data controller",
+          p: [
+            `${legal.ownerName} (${name}), tax ID ${legal.taxId}, ${legal.address}. Contact: ${email}.`,
+          ],
+        },
+        {
+          h: "What data we process and why",
+          p: [
+            "We process the data you provide through the contact form or by email (name, email, company and the content of your message) solely to answer your request and, where applicable, to prepare and manage a commercial proposal.",
+          ],
+        },
+        {
+          h: "Legal basis",
+          p: [
+            "The legal basis is your consent, given when you submit the form, and taking pre-contractual steps at your request (GDPR art. 6.1.a and 6.1.b).",
+          ],
+        },
+        {
+          h: "Retention",
+          p: [
+            "We keep your data for as long as needed to handle your request and afterwards for legally required periods. If we don't end up working together, we delete it within 12 months at most.",
+          ],
+        },
+        {
+          h: "Recipients",
+          p: [
+            "We do not share your data with third parties unless legally required. The contact form is delivered through Web3Forms, which acts as a data processor solely to forward your message to us by email.",
+          ],
+        },
+        {
+          h: "Your rights",
+          p: [
+            `You may exercise your rights of access, rectification, erasure, objection, restriction and portability by writing to ${email}. You can also lodge a complaint with the Spanish Data Protection Agency (www.aepd.es) or your local supervisory authority.`,
+          ],
+        },
+      ],
+    },
+    cookies: {
+      title: t("legal.cookies"),
+      description: `${name} cookie policy. This website does not use tracking, analytics or advertising cookies.`,
+      sections: [
+        {
+          h: "Do we use cookies?",
+          p: [
+            "No. This website does not set first- or third-party cookies for analytics, advertising or tracking, and does not use tools that profile your browsing. Fonts are served from our own server.",
+          ],
+        },
+        {
+          h: "Changes to this policy",
+          p: [
+            "If we add tools that use non-essential cookies in the future (for example, analytics), we will update this policy and ask for your prior consent through a notice.",
+          ],
+        },
+      ],
+    },
+  },
+};
+
+const page = docs[locale][doc];
+const breadcrumbs = [{ name: page.title, path: path(doc, locale) }];
+---
+
+<BaseLayout
+  title={page.title}
+  description={page.description}
+  locale={locale}
+  alternates={alternatesFor(doc)}
+  breadcrumbs={breadcrumbs}
+>
+  <PageHeader
+    locale={locale}
+    title={page.title}
+    lead={updated}
+    breadcrumbs={breadcrumbs}
+  />
+  <div class="container-x max-w-4xl py-14">
+    <div class="prose-site">
+      {
+        page.sections.map((s) => (
+          <>
+            <h2>{s.h}</h2>
+            {s.p.map((text) => (
+              <p>{text}</p>
+            ))}
+          </>
+        ))
+      }
+    </div>
+  </div>
+</BaseLayout>

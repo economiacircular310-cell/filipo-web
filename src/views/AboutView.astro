@@ -1,0 +1,122 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/ui/PageHeader.astro';
+import SectionHeading from '../components/ui/SectionHeading.astro';
+import WhyUs from '../components/home/WhyUs.astro';
+import TechStack from '../components/home/TechStack.astro';
+import CtaBanner from '../components/CtaBanner.astro';
+import { getServices } from '../lib/content';
+import { alternatesFor, path, type Locale } from '../i18n/routes';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const services = await getServices(locale);
+
+const copy = {
+  es: {
+    title: 'Sobre Filipo Studio: estudio de software y SEO',
+    description:
+      'Filipo Studio es un estudio de tecnología que une desarrollo de software a medida, SEO y rendimiento web. Conoce cómo trabajamos y qué nos diferencia.',
+    eyebrow: '// El estudio',
+    h1: 'Tecnología bien hecha, pensada para que te encuentren',
+    lead: 'Filipo Studio es un estudio de tecnología que une tres disciplinas que normalmente se contratan por separado: desarrollo de software, posicionamiento SEO y rendimiento web.',
+    crumb: 'Estudio',
+    missionEyebrow: '// Misión',
+    missionTitle: 'Construir software que funciona, se encuentra y se mantiene',
+    mission: [
+      'Muchas empresas tienen una web bonita que nadie encuentra, o una herramienta interna que nadie se atreve a tocar. Nosotros creemos que un proyecto digital solo está terminado cuando es útil, rápido, fácil de mantener y visible para quien lo busca.',
+      'Por eso cuidamos tanto el código como lo que ocurre después del lanzamiento: el posicionamiento en Google, la visibilidad en asistentes de IA, la velocidad y la experiencia de quien lo usa.',
+    ],
+    whatEyebrow: '// Qué hacemos',
+    whatTitle: 'Nuestras especialidades',
+    principlesEyebrow: '// Principios',
+    principlesTitle: 'Cómo entendemos nuestro trabajo',
+    principles: [
+      { title: 'Claridad', text: 'Explicamos qué vamos a hacer, por qué y cuánto cuesta, en un lenguaje que se entiende.' },
+      { title: 'Rigor técnico', text: 'Buenas prácticas, estándares web y decisiones basadas en datos, no en modas.' },
+      { title: 'Largo plazo', text: 'Construimos para que el proyecto pueda crecer y mantenerse durante años.' },
+    ],
+  },
+  en: {
+    title: 'About Filipo Studio: Software & SEO Studio',
+    description:
+      'Filipo Studio is a technology studio combining custom software development, SEO and web performance. Learn how we work and what sets us apart.',
+    eyebrow: '// The studio',
+    h1: 'Technology done right, built to be found',
+    lead: 'Filipo Studio is a technology studio that brings together three disciplines usually hired separately: software development, SEO and web performance.',
+    crumb: 'Studio',
+    missionEyebrow: '// Mission',
+    missionTitle: 'Building software that works, gets found and lasts',
+    mission: [
+      "Many companies have a beautiful website nobody finds, or an internal tool nobody dares to touch. We believe a digital project is only finished when it is useful, fast, easy to maintain and visible to the people looking for it.",
+      "That's why we care as much about the code as about what happens after launch: rankings on Google, visibility in AI assistants, speed and the experience of the people who use it.",
+    ],
+    whatEyebrow: '// What we do',
+    whatTitle: 'Our specialities',
+    principlesEyebrow: '// Principles',
+    principlesTitle: 'How we see our work',
+    principles: [
+      { title: 'Clarity', text: 'We explain what we will do, why, and what it costs, in plain language.' },
+      { title: 'Technical rigour', text: 'Best practices, web standards and data-driven decisions, not trends.' },
+      { title: 'Long-term thinking', text: 'We build so the project can grow and be maintained for years.' },
+    ],
+  },
+}[locale];
+
+const breadcrumbs = [{ name: copy.crumb, path: path('about', locale) }];
+---
+
+<BaseLayout
+  title={copy.title}
+  description={copy.description}
+  locale={locale}
+  alternates={alternatesFor('about')}
+  breadcrumbs={breadcrumbs}
+  pageType="AboutPage"
+>
+  <PageHeader locale={locale} eyebrow={copy.eyebrow} title={copy.h1} lead={copy.lead} breadcrumbs={breadcrumbs} />
+
+  <section class="container-x grid gap-12 py-20 lg:grid-cols-2" aria-labelledby="mission">
+    <SectionHeading id="mission" eyebrow={copy.missionEyebrow} title={copy.missionTitle} />
+    <div class="space-y-5 text-lg leading-relaxed text-muted">
+      {copy.mission.map((p) => <p>{p}</p>)}
+    </div>
+  </section>
+
+  <section class="container-x pb-20" aria-labelledby="what-we-do">
+    <SectionHeading id="what-we-do" eyebrow={copy.whatEyebrow} title={copy.whatTitle} />
+    <div class="mt-12 grid gap-5 md:grid-cols-3">
+      {
+        services.map((s) => (
+          <a href={s.href} class="card card-hover p-6">
+            <h3 class="text-lg font-semibold text-fg">{s.data.title}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-muted">{s.data.tagline}</p>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <WhyUs locale={locale} />
+
+  <section class="container-x py-20" aria-labelledby="principles">
+    <SectionHeading id="principles" eyebrow={copy.principlesEyebrow} title={copy.principlesTitle} />
+    <div class="mt-12 grid gap-5 md:grid-cols-3">
+      {
+        copy.principles.map((p, i) => (
+          <div class="card p-6">
+            <span class="font-mono text-sm text-brand-400">{String(i + 1).padStart(2, '0')}</span>
+            <h3 class="mt-4 text-lg font-semibold text-fg">{p.title}</h3>
+            <p class="mt-2 leading-relaxed text-muted">{p.text}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <TechStack locale={locale} />
+  <CtaBanner locale={locale} />
+</BaseLayout>

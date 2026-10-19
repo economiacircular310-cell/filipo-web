@@ -1,0 +1,79 @@
+---
+import Icon from '../ui/Icon.astro';
+import { path, type Locale } from '../../i18n/routes';
+import { useTranslations } from '../../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const copy = {
+  es: {
+    badge: 'Software a medida · SEO · Rendimiento web',
+    title: 'Software a medida y webs que',
+    highlight: 'Google y la IA recomiendan',
+    lead: 'En Filipo Studio diseñamos y desarrollamos software a medida, posicionamos tu web en Google y en buscadores de IA y la hacemos rápida. Tecnología bien hecha, con resultados que se pueden medir.',
+    points: ['Código en propiedad del cliente', 'Presupuestos cerrados por fases', 'Español e inglés'],
+  },
+  en: {
+    badge: 'Custom software · SEO · Web performance',
+    title: 'Custom software and websites that',
+    highlight: 'Google and AI recommend',
+    lead: 'At Filipo Studio we design and build custom software, rank your website on Google and AI search engines, and make it fast. Technology done right, with results you can measure.',
+    points: ['You own the code', 'Fixed-price phases', 'English and Spanish'],
+  },
+}[locale];
+
+const scores = [
+  { label: 'Performance', value: 100 },
+  { label: 'Accessibility', value: 100 },
+  { label: 'Best Practices', value: 100 },
+  { label: 'SEO', value: 100 },
+];
+const C = 2 * Math.PI * 22;
+---
+
+<section class="relative isolate overflow-hidden">
+  <div class="bg-grid absolute inset-0 -z-10" aria-hidden="true"></div>
+  <div class="glow -top-32 left-[10%] -z-10 h-96 w-96 bg-brand-500/50" aria-hidden="true"></div>
+  <div class="glow top-20 right-[5%] -z-10 h-80 w-80 bg-violet-500/40" aria-hidden="true"></div>
+  <div class="glow top-[28rem] left-[45%] -z-10 h-64 w-64 bg-cyan-400/20" aria-hidden="true"></div>
+
+  <div class="container-x grid items-center gap-14 pt-16 pb-20 sm:pt-24 lg:grid-cols-[1.1fr_1fr] lg:pb-28">
+    <div class="min-w-0">
+      <p
+        class="inline-flex items-center gap-2 rounded-full border border-line-strong bg-white/[0.03] px-3.5 py-1.5 font-mono text-xs text-muted"
+      >
+        <span class="relative flex h-2 w-2" aria-hidden="true">
+          <span class="absolute inline-flex h-full w-full rounded-full bg-success opacity-60 motion-safe:animate-ping"></span>
+          <span class="relative inline-flex h-2 w-2 rounded-full bg-success"></span>
+        </span>
+        {copy.badge}
+      </p>
+      <h1 class="mt-6 text-4xl font-semibold tracking-tight text-balance text-fg sm:text-5xl lg:text-6xl">
+        {copy.title} <span class="text-gradient">{copy.highlight}</span>
+      </h1>
+      <p class="mt-6 max-w-xl text-lg leading-relaxed text-pretty text-muted">{copy.lead}</p>
+      <div class="mt-9 flex flex-wrap gap-3">
+        <a href={path('contact', locale)} class="btn-primary px-6 py-3 text-base">
+          {t('cta.primary')}
+          <Icon name="arrow" size={18} />
+        </a>
+        <a href={path('services', locale)} class="btn-ghost px-6 py-3 text-base">{t('cta.secondary')}</a>
+      </div>
+      <ul class="mt-10 flex flex-wrap gap-x-6 gap-y-3 text-sm text-muted">
+        {
+          copy.points.map((p) => (
+            <li class="flex items-center gap-2">
+              <Icon name="check" size={16} class="text-cyan-400" />
+              {p}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>

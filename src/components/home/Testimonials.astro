@@ -1,0 +1,36 @@
+---
+import SectionHeading from '../ui/SectionHeading.astro';
+import { testimonials } from '../../data/testimonials';
+import type { Locale } from '../../i18n/routes';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy = {
+  es: { eyebrow: '// Clientes', title: 'Lo que dicen quienes ya han trabajado con nosotros' },
+  en: { eyebrow: '// Clients', title: "What our clients say" },
+}[locale];
+---
+
+{
+  testimonials.length > 0 && (
+    <section class="container-x py-20 sm:py-28" aria-labelledby="testimonials-title">
+      <SectionHeading id="testimonials-title" eyebrow={copy.eyebrow} title={copy.title} />
+      <div class="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        {testimonials.map((item) => (
+          <figure class="card flex flex-col p-7">
+            <blockquote class="flex-1 leading-relaxed text-fg">“{item.quote[locale]}”</blockquote>
+            <figcaption class="mt-6 border-t border-line pt-5 text-sm">
+              <span class="block font-semibold text-fg">{item.name}</span>
+              <span class="text-muted">
+                {item.role[locale]}, {item.company}
+              </span>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </section>
+  )
+}

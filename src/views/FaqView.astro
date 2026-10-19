@@ -1,0 +1,87 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/ui/PageHeader.astro';
+import FaqList from '../components/ui/FaqList.astro';
+import CtaBanner from '../components/CtaBanner.astro';
+import { faq } from '../data/faq';
+import { getServices } from '../lib/content';
+import { abs, faqPage } from '../lib/schema';
+import { alternatesFor, path, type Locale } from '../i18n/routes';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const services = await getServices(locale);
+const copy = {
+  es: {
+    title: 'Preguntas frecuentes sobre software a medida y SEO',
+    description:
+      'Resolvemos las dudas más habituales sobre desarrollo de software a medida, posicionamiento SEO, buscadores de IA, optimización web, plazos y presupuestos.',
+    eyebrow: '// FAQ',
+    h1: 'Preguntas frecuentes',
+    lead: 'Respuestas claras a lo que más nos preguntan sobre el estudio, los proyectos y cada uno de nuestros servicios.',
+    crumb: 'Preguntas frecuentes',
+  },
+  en: {
+    title: 'FAQ: Custom Software, SEO & Web Performance',
+    description:
+      'Answers to the most common questions about custom software development, SEO, AI search, web performance, timelines and pricing.',
+    eyebrow: '// FAQ',
+    h1: 'Frequently asked questions',
+    lead: 'Clear answers to what we get asked most about the studio, projects and each of our services.',
+    crumb: 'FAQ',
+  },
+}[locale];
+
+const groups: { title: string; items: { q: string; a: string }[]; href?: string }[] = [
+  ...faq[locale],
+  ...services.filter((s) => s.data.faq.length).map((s) => ({ title: s.data.title, items: s.data.faq, href: s.href })),
+];
+const breadcrumbs = [{ name: copy.crumb, path: path('faq', locale) }];
+// Service FAQs are marked up on their own service pages; Google asks for repeated
+// FAQ content to be marked up only once, so only the general ones go here.
+const url = abs(path('faq', locale));
+---
+
+<BaseLayout
+  title={copy.title}
+  description={copy.description}
+  locale={locale}
+  alternates={alternatesFor('faq')}
+  breadcrumbs={breadcrumbs}
+  schema={[faqPage(faq[locale].flatMap((g) => g.items), url)]}
+>
+  <PageHeader locale={locale} eyebrow={copy.eyebrow} title={copy.h1} lead={copy.lead} breadcrumbs={breadcrumbs} />
+
+  <div class="container-x grid gap-12 py-16 lg:grid-cols-[16rem_1fr]">
+    <nav aria-label={copy.h1} class="hidden lg:block">
+      <ul class="sticky top-24 space-y-2 text-sm">
+        {
+          groups.map((g, i) => (
+            <li>
+              <a href={`#faq-${i}`} class="text-muted transition hover:text-fg">
+                {g.title}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+    <div class="space-y-14">
+      {
+        groups.map((g, i) => (
+          <section aria-labelledby={`faq-${i}`}>
+            <h2 id={`faq-${i}`} class="mb-6 text-2xl font-semibold tracking-tight text-fg">
+              {g.href ? <a href={g.href} class="hover:text-brand-400">{g.title}</a> : g.title}
+            </h2>
+            <FaqList items={g.items} />
+          </section>
+        ))
+      }
+    </div>
+  </div>
+
+  <CtaBanner locale={locale} />
+</BaseLayout>

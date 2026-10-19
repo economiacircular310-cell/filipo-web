@@ -1,0 +1,58 @@
+---
+import SectionHeading from '../ui/SectionHeading.astro';
+import Icon, { type IconName } from '../ui/Icon.astro';
+import type { Locale } from '../../i18n/routes';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const copy: Record<Locale, { eyebrow: string; title: string; lead: string; items: { icon: IconName; title: string; text: string }[] }> = {
+  es: {
+    eyebrow: '',
+    title: 'Un estudio pequeño, con estándares de empresa grande',
+    lead: 'Trabajas directamente con quienes diseñan y programan tu proyecto. Sin intermediarios, sin letra pequeña.',
+    items: [
+      { icon: 'target', title: 'Objetivos medibles', text: 'Cada proyecto arranca con métricas acordadas: rendimiento, posiciones, conversiones o tiempo ahorrado.' },
+      { icon: 'shield', title: 'El código es tuyo', text: 'Código fuente, documentación y accesos en propiedad del cliente desde el primer día.' },
+      { icon: 'layers', title: 'Calidad desde la base', text: 'Revisiones de código, pruebas, accesibilidad y SEO técnico integrados en el desarrollo, no añadidos al final.' },
+      { icon: 'chat', title: 'Comunicación directa', text: 'Un interlocutor técnico, demos periódicas y entornos de prueba para que veas el avance real.' },
+      { icon: 'doc', title: 'Presupuestos claros', text: 'Propuestas cerradas por fases, con alcance y entregables definidos antes de empezar.' },
+      { icon: 'globe', title: 'Pensado para crecer', text: 'Arquitecturas escalables, webs multidioma y contenidos preparados para Google y la IA.' },
+    ],
+  },
+  en: {
+    eyebrow: '// 02 — Why Filipo Studio',
+    title: 'A small studio with big-company standards',
+    lead: 'You work directly with the people who design and build your project. No middlemen, no fine print.',
+    items: [
+      { icon: 'target', title: 'Measurable goals', text: 'Every project starts with agreed metrics: performance, rankings, conversions or time saved.' },
+      { icon: 'shield', title: 'You own the code', text: 'Source code, documentation and access belong to the client from day one.' },
+      { icon: 'layers', title: 'Quality built in', text: 'Code review, testing, accessibility and technical SEO are part of development, not an afterthought.' },
+      { icon: 'chat', title: 'Direct communication', text: 'One technical point of contact, regular demos and staging environments so you see real progress.' },
+      { icon: 'doc', title: 'Clear pricing', text: 'Fixed-price proposals per phase, with scope and deliverables defined before we start.' },
+      { icon: 'globe', title: 'Built to grow', text: 'Scalable architectures, multilingual sites and content ready for Google and AI search.' },
+    ],
+  },
+};
+const c = copy[locale];
+---
+
+<section class="border-y border-line bg-ink-850/50" aria-labelledby="why-title">
+  <div class="container-x py-20 sm:py-28">
+    <SectionHeading id="why-title" eyebrow={c.eyebrow} title={c.title} lead={c.lead} />
+    <div class="mt-14 grid gap-px overflow-hidden rounded-[var(--radius-card)] border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+      {
+        c.items.map((item) => (
+          <div class="bg-ink-900 p-7 transition hover:bg-ink-850">
+            <Icon name={item.icon} size={22} class="text-brand-400" />
+            <h3 class="mt-5 text-lg font-semibold text-fg">{item.title}</h3>
+            <p class="mt-2 leading-relaxed text-muted">{item.text}</p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

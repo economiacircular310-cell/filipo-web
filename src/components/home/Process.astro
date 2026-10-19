@@ -1,0 +1,54 @@
+---
+import SectionHeading from '../ui/SectionHeading.astro';
+import { processSteps } from '../../data/process';
+import type { Locale } from '../../i18n/routes';
+
+interface Props {
+  locale: Locale;
+  /** Show the longer description of each step (used on the "How we work" page). */
+  detailed?: boolean;
+  showHeading?: boolean;
+}
+
+const { locale, detailed = false, showHeading = true } = Astro.props;
+
+
+const steps = processSteps[locale];
+const heading = {
+  es: {
+    eyebrow: '',
+    title: 'Un proceso claro, de la primera llamada al lanzamiento',
+    lead: 'Cuatro fases, entregables concretos en cada una y visibilidad total del avance.',
+    output: 'Resultado',
+  },
+  en: {
+    eyebrow: '// 03 — How we work',
+    title: 'A clear process, from first call to launch',
+    lead: 'Four phases, concrete deliverables in each and full visibility of progress.',
+    output: 'Outcome',
+  },
+}[locale];
+---
+
+<section class="container-x py-20 sm:py-28" aria-labelledby={showHeading ? 'process-title' : undefined}>
+  {showHeading && <SectionHeading id="process-title" eyebrow={heading.eyebrow} title={heading.title} lead={heading.lead} />}
+  <ol class:list={['grid gap-5', showHeading && 'mt-14', detailed ? 'lg:grid-cols-2' : 'md:grid-cols-2 lg:grid-cols-4']}>
+    {
+      steps.map((step, i) => (
+        <li class="card p-7">
+          <div class="flex items-center gap-3">
+            <span class="font-mono text-sm text-brand-400">{String(i + 1).padStart(2, '0')}</span>
+            <span class="h-px flex-1 bg-gradient-to-r from-line-strong to-transparent" aria-hidden="true" />
+          </div>
+          <h3 class="mt-5 text-lg font-semibold text-fg">{step.title}</h3>
+          <p class="mt-2 leading-relaxed text-muted">{detailed ? step.detail : step.text}</p>
+          {detailed && (
+            <p class="mt-5 inline-flex items-center gap-2 rounded-full border border-line-strong px-3 py-1 font-mono text-xs text-cyan-400">
+              {heading.output}: {step.output}
+            </p>
+          )}
+        </li>
+      ))
+    }
+  </ol>
+</section>

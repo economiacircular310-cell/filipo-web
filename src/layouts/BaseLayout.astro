@@ -1,0 +1,100 @@
+---
+import { Font } from 'astro:assets';
+import '../styles/global.css';
+import SEO from '../components/seo/SEO.astro';
+import JsonLd from '../components/seo/JsonLd.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { site } from '../config/site';
+import { htmlLang, path, type Alternates, type Locale } from '../i18n/routes';
+import { useTranslations } from '../i18n/ui';
+import { abs, breadcrumbList, graph, organization, webPage, website } from '../lib/schema';
+
+export interface Crumb {
+  name: string;
+  path: string;
+}
+
+interface Props {
+  title: string;
+  description: string;
+  locale: Locale;
+  alternates: Alternates;
+  /** Breadcrumb trail excluding "Home" (added automatically). */
+  breadcrumbs?: Crumb[];
+  /** Extra schema.org nodes for this page. */
+  schema?: Record<string, unknown>[];
+  pageType?: string;
+  type?: 'website' | 'article';
+  noindex?: boolean;
+  publishedTime?: Date;
+  modifiedTime?: Date;
+}
+
+const {
+  title,
+  description,
+  locale,
+  alternates,
+  breadcrumbs = [],
+  schema = [],
+  pageType,
+  type,
+  noindex,
+  publishedTime,
+  modifiedTime,
+} = Astro.props;
+const t = useTranslations(locale);
+const url = abs(Astro.url.pathname);
+
+const nodes = [
+  organization(locale),
+  website(locale),
+  webPage({ url, title, description, locale, type: pageType }),
+  ...(breadcrumbs.length ? [breadcrumbList([{ name: t('breadcrumb.home'), path: path('home', locale) }, ...breadcrumbs])] : []),
+  ...schema,
+];
+---
+
+<!doctype html>
+<html lang={htmlLang[locale]} dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0a0b10" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="generator" content={Astro.generator} />
+    <SEO
+      title={title}
+      description={description}
+      locale={locale}
+      alternates={alternates}
+      type={type}
+      noindex={noindex}
+      publishedTime={publishedTime}
+      modifiedTime={modifiedTime}
+    />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="text/plain" href="/llms.txt" title={`${site.name} — llms.txt`} />
+    <Font cssVariable="--font-inter" preload={[{ subset: 'latin' }]} />
+    <Font cssVariable="--font-jetbrains" />
+    <JsonLd data={graph(nodes)} />
+  </head>
+  <body class="min-h-dvh overflow-x-clip">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-full focus:bg-brand-500 focus:px-4 focus:py-2 focus:text-sm focus:text-white"
+    >
+      {t('a11y.skip')}
+    </a>
+    <Header locale={locale} alternates={alternates} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer locale={locale} />
+  </body>
+</html>

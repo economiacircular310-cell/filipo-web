@@ -1,0 +1,46 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/ui/Icon.astro';
+import { alternatesFor, path, type Locale } from '../i18n/routes';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const c = {
+  es: {
+    title: 'Mensaje enviado',
+    description: 'Hemos recibido tu mensaje. Te responderemos en menos de un día laborable.',
+    h1: '¡Gracias! Hemos recibido tu mensaje',
+    text: 'Te responderemos en menos de un día laborable. Mientras tanto, puedes conocer mejor cómo trabajamos.',
+    process: 'Cómo trabajamos',
+    home: 'Volver al inicio',
+  },
+  en: {
+    title: 'Message sent',
+    description: "We've received your message. We'll reply within one business day.",
+    h1: "Thank you! We've received your message",
+    text: "We'll reply within one business day. In the meantime, learn more about how we work.",
+    process: 'How we work',
+    home: 'Back to home',
+  },
+}[locale];
+---
+
+<BaseLayout title={c.title} description={c.description} locale={locale} alternates={alternatesFor('contactThanks')} noindex>
+  <section class="relative isolate overflow-hidden">
+    <div class="bg-grid absolute inset-0 -z-10" aria-hidden="true"></div>
+    <div class="container-x flex min-h-[60vh] flex-col items-center justify-center py-24 text-center">
+      <span class="inline-flex h-14 w-14 items-center justify-center rounded-full border border-success/40 bg-success/10 text-success">
+        <Icon name="check" size={28} />
+      </span>
+      <h1 class="mt-8 text-3xl font-semibold tracking-tight text-fg sm:text-4xl">{c.h1}</h1>
+      <p class="mt-4 max-w-lg text-lg text-muted">{c.text}</p>
+      <div class="mt-9 flex flex-wrap justify-center gap-3">
+        <a href={path('process', locale)} class="btn-primary">{c.process}</a>
+        <a href={path('home', locale)} class="btn-ghost">{c.home}</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,35 @@
+---
+import type { Crumb } from '../../layouts/BaseLayout.astro';
+import { path, type Locale } from '../../i18n/routes';
+import { useTranslations } from '../../i18n/ui';
+
+interface Props {
+  locale: Locale;
+  items: Crumb[];
+}
+
+const { locale, items } = Astro.props;
+const t = useTranslations(locale);
+const trail = [{ name: t('breadcrumb.home'), path: path('home', locale) }, ...items];
+---
+
+<nav aria-label={t('a11y.breadcrumbs')}>
+  <ol class="flex flex-wrap items-center gap-2 font-mono text-xs text-subtle">
+    {
+      trail.map((crumb, i) => (
+        <li class="flex items-center gap-2">
+          {i > 0 && <span aria-hidden="true">/</span>}
+          {i === trail.length - 1 ? (
+            <span aria-current="page" class="text-muted">
+              {crumb.name}
+            </span>
+          ) : (
+            <a href={crumb.path} class="transition hover:text-fg">
+              {crumb.name}
+            </a>
+          )}
+        </li>
+      ))
+    }
+  </ol>
+</nav>

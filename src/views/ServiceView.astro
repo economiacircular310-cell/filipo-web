@@ -1,0 +1,151 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/ui/PageHeader.astro';
+import SectionHeading from '../components/ui/SectionHeading.astro';
+import FaqList from '../components/ui/FaqList.astro';
+import Icon from '../components/ui/Icon.astro';
+import CtaBanner from '../components/CtaBanner.astro';
+import { alternatesForEntry, getServices, type Service } from '../lib/content';
+import { abs, faqPage, service as serviceNode } from '../lib/schema';
+import { path } from '../i18n/routes';
+import { useTranslations } from '../i18n/ui';
+
+interface Props {
+  entry: Service;
+}
+
+const { entry } = Astro.props;
+const { locale, data } = entry;
+const t = useTranslations(locale);
+const { Content } = await render(entry);
+const all = await getServices();
+const related = all.filter((s) => s.locale === locale && s.data.key !== data.key);
+
+const copy = {
+  es: {
+    eyebrow: '// Servicio',
+    includes: 'Qué incluye',
+    process: 'Cómo lo hacemos',
+    processTitle: `Nuestro proceso de ${data.title.toLowerCase()}`,
+    faq: 'Preguntas frecuentes',
+    faqTitle: `Preguntas frecuentes sobre ${data.title.toLowerCase()}`,
+    related: 'Otros servicios',
+    asideText: 'Cuéntanos tu caso y te enviamos una propuesta con alcance, plazos y presupuesto.',
+  },
+  en: {
+    eyebrow: '// Service',
+    includes: "What's included",
+    process: 'How we do it',
+    processTitle: `Our ${data.title.toLowerCase()} process`,
+    faq: 'FAQ',
+    faqTitle: `${data.title} FAQ`,
+    related: 'Other services',
+    asideText: "Tell us about your case and we'll send a proposal with scope, timeline and budget.",
+  },
+}[locale];
+
+const breadcrumbs = [
+  { name: t('nav.services'), path: path('services', locale) },
+  { name: data.title, path: entry.href },
+];
+const schema = [
+  serviceNode({
+    name: data.title,
+    description: data.answer,
+    path: entry.href,
+    serviceType: data.title,
+    deliverables: data.deliverables,
+    locale,
+  }),
+  ...(data.faq.length ? [faqPage(data.faq, abs(entry.href))] : []),
+];
+---
+
+<BaseLayout
+  title={data.seoTitle}
+  description={data.description}
+  locale={locale}
+  alternates={alternatesForEntry(entry, all)}
+  breadcrumbs={breadcrumbs}
+  schema={schema}
+>
+  <PageHeader locale={locale} eyebrow={copy.eyebrow} title={data.title} lead={data.answer} breadcrumbs={breadcrumbs}>
+    <div class="mt-8 flex flex-wrap gap-3">
+      <a href={path('contact', locale)} class="btn-primary px-6 py-3">{t('cta.primary')} <Icon name="arrow" size={18} /></a>
+    </div>
+  </PageHeader>
+
+  <div class="container-x grid gap-12 py-16 sm:py-20 lg:grid-cols-[1fr_22rem]">
+    <article class="prose-site min-w-0">
+      <Content />
+    </article>
+
+    <aside class="lg:sticky lg:top-24 lg:self-start">
+      <div class="card p-6">
+        <h2 class="eyebrow">{copy.includes}</h2>
+        <ul class="mt-5 space-y-3 text-sm text-fg">
+          {
+            data.deliverables.map((d) => (
+              <li class="flex gap-2.5">
+                <Icon name="check" size={16} class="mt-0.5 shrink-0 text-cyan-400" />
+                {d}
+              </li>
+            ))
+          }
+        </ul>
+        <div class="mt-6 border-t border-line pt-6">
+          <p class="text-sm text-muted">{copy.asideText}</p>
+          <a href={path('contact', locale)} class="btn-primary mt-4 w-full">{t('nav.contact')}</a>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <section class="border-y border-line bg-ink-850/50" aria-labelledby="service-process">
+    <div class="container-x py-20">
+      <SectionHeading id="service-process" eyebrow={`// ${copy.process}`} title={copy.processTitle} />
+      <ol class="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+        {
+          data.process.map((step, i) => (
+            <li class="card p-6">
+              <span class="font-mono text-sm text-brand-400">{String(i + 1).padStart(2, '0')}</span>
+              <h3 class="mt-4 text-lg font-semibold text-fg">{step.title}</h3>
+              <p class="mt-2 text-sm leading-relaxed text-muted">{step.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  {
+    data.faq.length > 0 && (
+      <section class="container-x grid gap-12 py-20 lg:grid-cols-[1fr_1.4fr]" aria-labelledby="service-faq">
+        <SectionHeading id="service-faq" eyebrow={`// ${copy.faq}`} title={copy.faqTitle} />
+        <FaqList items={data.faq} />
+      </section>
+    )
+  }
+
+  <section class="container-x pb-8" aria-labelledby="related-services">
+    <h2 id="related-services" class="eyebrow">{copy.related}</h2>
+    <div class="mt-6 grid gap-5 md:grid-cols-2">
+      {
+        related.map((s) => (
+          <a href={s.href} class="card card-hover group flex items-start gap-5 p-6">
+            <span class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-line-strong bg-ink-700 text-brand-400">
+              <Icon name={s.data.icon} size={22} />
+            </span>
+            <span>
+              <span class="block text-lg font-semibold text-fg">{s.data.title}</span>
+              <span class="mt-1 block text-sm text-muted">{s.data.tagline}</span>
+            </span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <CtaBanner locale={locale} />
+</BaseLayout>

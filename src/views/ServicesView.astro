@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/ui/PageHeader.astro';
+import ServicesBento from '../components/home/ServicesBento.astro';
+import CtaBanner from '../components/CtaBanner.astro';
+import { getServices } from '../lib/content';
+import { abs } from '../lib/schema';
+import { alternatesFor, path, type Locale } from '../i18n/routes';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const services = await getServices(locale);
+const copy = {
+  es: {
+    title: 'Servicios de desarrollo de software, SEO y optimización web',
+    h1: 'Servicios',
+    eyebrow: '// Lo que hacemos',
+    description:
+      'Desarrollo de software a medida, posicionamiento SEO en Google y en buscadores de IA, y optimización del rendimiento web. Conoce los servicios de Filipo Studio.',
+    lead: 'Desarrollo de software a medida, posicionamiento en Google y en buscadores de IA, y optimización del rendimiento web. Servicios independientes que funcionan mejor juntos.',
+    crumb: 'Servicios',
+  },
+  en: {
+    title: 'Custom Software, SEO & Web Performance Services',
+    h1: 'Services',
+    eyebrow: '// What we do',
+    description:
+      'Custom software development, SEO for Google and AI search engines, and web performance optimization. Explore Filipo Studio’s services.',
+    lead: 'Custom software development, ranking on Google and AI search engines, and web performance optimization. Independent services that work better together.',
+    crumb: 'Services',
+  },
+}[locale];
+
+const breadcrumbs = [{ name: copy.crumb, path: path('services', locale) }];
+const itemList = {
+  '@type': 'ItemList',
+  itemListElement: services.map((s, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    url: abs(s.href),
+    name: s.data.title,
+  })),
+};
+---
+
+<BaseLayout
+  title={copy.title}
+  description={copy.description}
+  locale={locale}
+  alternates={alternatesFor('services')}
+  breadcrumbs={breadcrumbs}
+  schema={[itemList]}
+>
+  <PageHeader locale={locale} eyebrow={copy.eyebrow} title={copy.h1} lead={copy.lead} breadcrumbs={breadcrumbs} />
+  <ServicesBento locale={locale} showHeading={false} />
+  <CtaBanner locale={locale} />
+</BaseLayout>

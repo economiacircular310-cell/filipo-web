@@ -1,0 +1,46 @@
+---
+import Icon from './ui/Icon.astro';
+import { site } from '../config/site';
+import { path, type Locale } from '../i18n/routes';
+import { useTranslations } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+  title?: string;
+  text?: string;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const defaults = {
+  es: {
+    title: '¿Tienes un proyecto en mente?',
+    text: 'Cuéntanos qué necesitas. Te respondemos en menos de un día laborable con los siguientes pasos, sin compromiso.',
+    email: 'o escríbenos a',
+  },
+  en: {
+    title: 'Have a project in mind?',
+    text: "Tell us what you need. We'll reply within one business day with next steps, no strings attached.",
+    email: 'or email us at',
+  },
+}[locale];
+const { title = defaults.title, text = defaults.text } = Astro.props;
+---
+
+<section class="container-x py-16">
+  <div class="relative isolate overflow-hidden rounded-3xl border border-line-strong bg-ink-850 px-6 py-14 text-center sm:px-12 sm:py-20">
+    <div class="bg-grid absolute inset-0 -z-10 opacity-60" aria-hidden="true"></div>
+    <div class="glow -bottom-32 left-1/2 -z-10 h-72 w-[36rem] -translate-x-1/2 bg-brand-500/50" aria-hidden="true"></div>
+    <h2 class="mx-auto max-w-2xl text-3xl font-semibold tracking-tight text-balance text-fg sm:text-4xl">{title}</h2>
+    <p class="mx-auto mt-4 max-w-xl text-lg text-pretty text-muted">{text}</p>
+    <div class="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row">
+      <a href={path('contact', locale)} class="btn-primary px-6 py-3 text-base">
+        {t('cta.primary')}
+        <Icon name="arrow" size={18} />
+      </a>
+      <p class="text-sm text-muted">
+        {defaults.email} <a href={`mailto:${site.email}`} class="font-mono text-fg hover:text-brand-400">{site.email}</a>
+      </p>
+    </div>
+  </div>
+</section>

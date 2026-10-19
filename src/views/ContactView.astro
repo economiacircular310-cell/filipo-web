@@ -1,0 +1,121 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/ui/PageHeader.astro';
+import ContactForm from '../components/ContactForm.astro';
+import Icon, { type IconName } from '../components/ui/Icon.astro';
+import { site } from '../config/site';
+import { alternatesFor, path, type Locale } from '../i18n/routes';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy: Record<
+  Locale,
+  {
+    title: string;
+    description: string;
+    eyebrow: string;
+    h1: string;
+    lead: string;
+    crumb: string;
+    nextTitle: string;
+    next: string[];
+    info: { icon: IconName; title: string; text: string; href?: string }[];
+  }
+> = {
+  es: {
+    title: 'Contacto: pide presupuesto para tu proyecto',
+    description:
+      'Cuéntanos tu proyecto de software a medida, SEO u optimización web. Te respondemos en menos de un día laborable con una propuesta y los siguientes pasos.',
+    eyebrow: '// Contacto',
+    h1: 'Hablemos de tu proyecto',
+    lead: 'Rellena el formulario y te responderemos en menos de un día laborable. La primera reunión es gratuita y sin compromiso.',
+    crumb: 'Contacto',
+    nextTitle: 'Qué pasa después',
+    next: [
+      'Leemos tu mensaje y te respondemos en menos de un día laborable.',
+      'Agendamos una llamada de 30 minutos para entender tus objetivos.',
+      'Te enviamos una propuesta con alcance, plazos y presupuesto.',
+    ],
+    info: [
+      { icon: 'mail', title: 'Email', text: site.email, href: `mailto:${site.email}` },
+      { icon: 'clock', title: 'Tiempo de respuesta', text: 'Menos de 1 día laborable' },
+      { icon: 'globe', title: 'Idiomas', text: 'Español e inglés · trabajo en remoto' },
+    ],
+  },
+  en: {
+    title: 'Contact: Request a Proposal for Your Project',
+    description:
+      'Tell us about your custom software, SEO or web performance project. We reply within one business day with a proposal and next steps.',
+    eyebrow: '// Contact',
+    h1: "Let's talk about your project",
+    lead: "Fill in the form and we'll reply within one business day. The first call is free and with no commitment.",
+    crumb: 'Contact',
+    nextTitle: 'What happens next',
+    next: [
+      'We read your message and reply within one business day.',
+      'We schedule a 30-minute call to understand your goals.',
+      'We send you a proposal with scope, timeline and budget.',
+    ],
+    info: [
+      { icon: 'mail', title: 'Email', text: site.email, href: `mailto:${site.email}` },
+      { icon: 'clock', title: 'Response time', text: 'Under 1 business day' },
+      { icon: 'globe', title: 'Languages', text: 'English and Spanish · remote work' },
+    ],
+  },
+};
+const c = copy[locale];
+const breadcrumbs = [{ name: c.crumb, path: path('contact', locale) }];
+---
+
+<BaseLayout
+  title={c.title}
+  description={c.description}
+  locale={locale}
+  alternates={alternatesFor('contact')}
+  breadcrumbs={breadcrumbs}
+  pageType="ContactPage"
+>
+  <PageHeader locale={locale} eyebrow={c.eyebrow} title={c.h1} lead={c.lead} breadcrumbs={breadcrumbs} />
+
+  <div class="container-x grid gap-10 py-16 lg:grid-cols-[1fr_22rem]">
+    <ContactForm locale={locale} />
+
+    <aside class="space-y-5">
+      <div class="card p-6">
+        <h2 class="eyebrow">{c.nextTitle}</h2>
+        <ol class="mt-5 space-y-4">
+          {
+            c.next.map((step, i) => (
+              <li class="flex gap-3 text-sm leading-relaxed text-muted">
+                <span class="font-mono text-brand-400">{String(i + 1).padStart(2, '0')}</span>
+                {step}
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+      <ul class="card divide-y divide-line">
+        {
+          c.info.map((item) => (
+            <li class="flex items-start gap-4 p-5">
+              <Icon name={item.icon} size={20} class="mt-0.5 shrink-0 text-brand-400" />
+              <div class="text-sm">
+                <p class="font-medium text-fg">{item.title}</p>
+                {item.href ? (
+                  <a href={item.href} class="font-mono text-muted hover:text-brand-400">
+                    {item.text}
+                  </a>
+                ) : (
+                  <p class="text-muted">{item.text}</p>
+                )}
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </aside>
+  </div>
+</BaseLayout>
