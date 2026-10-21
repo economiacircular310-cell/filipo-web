@@ -100,6 +100,7 @@ The build is a plain static `dist/` folder that works on any static host.
 
 | Host | Settings |
 |---|---|
+| **GitHub Pages** (current) | `.github/workflows/deploy.yml` builds and deploys every push to `main`. In repo Settings → Pages, set Source to "GitHub Actions". The form key comes from the Actions variable `PUBLIC_WEB3FORMS_KEY`. `public/CNAME` sets the custom domain. Custom headers (`_headers`, `vercel.json`) are ignored there. |
 | **Cloudflare Pages** | Build command `npm run build`, output `dist`, environment variable `PUBLIC_WEB3FORMS_KEY`. `public/_headers` is applied automatically. |
 | **Netlify** | Build command `npm run build`, publish directory `dist`, environment variable `PUBLIC_WEB3FORMS_KEY`. `public/_headers` is applied automatically. |
 | **Vercel** | Framework preset "Astro", environment variable `PUBLIC_WEB3FORMS_KEY`. `vercel.json` sets the headers. |
